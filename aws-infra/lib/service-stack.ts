@@ -113,6 +113,27 @@ export class ServiceStack extends cdk.Stack {
       vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
     });
 
+    // The workshop uses plain HTTP on :80 because attendees do not own
+    // a shared domain to attach an ACM certificate to. In a real
+    // deployment, terminate TLS on the ALB with a :443 listener:
+    //
+    //   const cert = acm.Certificate.fromCertificateArn(
+    //     this, 'AlbCert', 'arn:aws:acm:us-east-1:ACCOUNT:certificate/...'
+    //   );
+    //   const httpsListener = this.loadBalancer.addListener('HttpsListener', {
+    //     port: 443,
+    //     protocol: elbv2.ApplicationProtocol.HTTPS,
+    //     certificates: [cert],
+    //     open: false,
+    //   });
+    //   httpsListener.addTargets(...);   // same target group as below
+    //   this.loadBalancer.addListener('HttpRedirect', {
+    //     port: 80,
+    //     protocol: elbv2.ApplicationProtocol.HTTP,
+    //     defaultAction: elbv2.ListenerAction.redirect({
+    //       protocol: 'HTTPS', port: '443', permanent: true,
+    //     }),
+    //   });
     const listener = this.loadBalancer.addListener('HttpListener', {
       port: 80,
       protocol: elbv2.ApplicationProtocol.HTTP,

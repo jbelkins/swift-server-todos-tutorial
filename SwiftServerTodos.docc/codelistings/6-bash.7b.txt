@@ -2,6 +2,16 @@
 
  [OK]  DatabaseStack
 
+ Deployment time: 447.4s
+
 Outputs:
-DatabaseStack.ClusterEndpoint = swift-todos-db.cluster-abc.us-east-1.rds.amazonaws.com
-DatabaseStack.SecretArn = arn:aws:secretsmanager:us-east-1:123456789012:secret:todos-admin-xxxxxx
+DatabaseStack.ClusterEndpoint = databasestack-auroracluster23d869c0-abc123def456.cluster-xyz789.us-east-1.rds.amazonaws.com
+DatabaseStack.ClusterSecretArn = arn:aws:secretsmanager:us-east-1:123456789012:secret:DatabaseStackAuroraClusterS-abcdef123456-XYZ789
+
+# CDK auto-generated export used by ServiceStack. Ignore.
+DatabaseStack.ExportsOutputRefAuroraClusterSecretAttachment... = arn:aws:secretsmanager:us-east-1:123456789012:secret:DatabaseStackAuroraClusterS-abcdef123456-XYZ789
+
+Stack ARN:
+arn:aws:cloudformation:us-east-1:123456789012:stack/DatabaseStack/27bf0500-8456-11f1-947c-129788926c1f
+
+ Total time: 466.15s

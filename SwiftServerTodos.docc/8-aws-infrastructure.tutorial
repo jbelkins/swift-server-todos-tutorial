@@ -1,4 +1,4 @@
-@Tutorial(time: 15) {
+@Tutorial(time: 20) {
     @Intro(title: "Provision the network and database") {
         Create the two foundation stacks: the network the app runs on and the Aurora Serverless v2 cluster the app talks to. Neither stack starts the app itself. That happens in the next tutorial.
     }
@@ -14,7 +14,7 @@
             @Step {
                 **Deploy** `NetworkStack`.
 
-                From `aws-infra/`, run `npx cdk deploy NetworkStack --region us-east-1`. CDK prints the VPC ID and the security-group IDs it created. Nothing costs money yet: interface VPC endpoints are billed only while they exist, and the deploy takes about two minutes.
+                From `aws-infra/`, run `npx cdk deploy NetworkStack --region us-east-1`. The deploy takes about two minutes. CDK prints the VPC ID and the security-group IDs it created. Interface VPC endpoints start billing as soon as the stack finishes, so keep an eye on cost if you leave it up overnight.
 
                 @Code(name: "cdk deploy NetworkStack", file: 6-bash.7a.txt, reset: true)
             }
@@ -32,7 +32,7 @@
             @Step {
                 **Deploy** `DatabaseStack`.
 
-                Run `npx cdk deploy DatabaseStack --region us-east-1`. Aurora Serverless v2 clusters take five to seven minutes to create. When the command returns, the cluster is running and the Secrets Manager secret holds the generated credentials.
+                Run `npx cdk deploy DatabaseStack --region us-east-1`. Aurora Serverless v2 clusters take seven to eight minutes to create. This is a good moment to grab water. When the command returns, the cluster is running and the Secrets Manager secret holds the generated credentials.
 
                 @Code(name: "cdk deploy DatabaseStack", file: 6-bash.7b.txt, reset: true)
             }

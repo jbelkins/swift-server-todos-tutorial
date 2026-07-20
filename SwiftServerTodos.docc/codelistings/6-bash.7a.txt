@@ -3,8 +3,23 @@
 
  [OK]  NetworkStack
 
+ Deployment time: 92.79s
+
 Outputs:
-NetworkStack.VpcId = vpc-0123456789abcdef0
-NetworkStack.AlbSecurityGroupId = sg-0aaaaaaaaaaaaaaaa
-NetworkStack.TaskSecurityGroupId = sg-0bbbbbbbbbbbbbbbb
-NetworkStack.AuroraSecurityGroupId = sg-0cccccccccccccccc
+NetworkStack.VpcId = vpc-01dca1e73cff9d25d
+
+# CDK also emits auto-generated ExportsOutput* entries used by the
+# other stacks. You can ignore them; they wire NetworkStack values
+# into DatabaseStack and ServiceStack on the next deploys.
+NetworkStack.ExportsOutputFnGetAttAlbSecurityGroup...    = sg-063f25c7224beddc8
+NetworkStack.ExportsOutputFnGetAttAuroraSecurityGroup... = sg-0b1b006a27b46d712
+NetworkStack.ExportsOutputFnGetAttTasksSecurityGroup...  = sg-06c14aa54c9aa8db9
+NetworkStack.ExportsOutputRefVpcprivateSubnet1...         = subnet-05acb62c5342da51d
+NetworkStack.ExportsOutputRefVpcprivateSubnet2...         = subnet-075946767113615cb
+NetworkStack.ExportsOutputRefVpcpublicSubnet1...          = subnet-02c52beedef7d871f
+NetworkStack.ExportsOutputRefVpcpublicSubnet2...          = subnet-0b6fedd26b0c3b6e9
+
+Stack ARN:
+arn:aws:cloudformation:us-east-1:123456789012:stack/NetworkStack/cfc7cb20-8455-11f1-ae1a-12cc179be887
+
+ Total time: 119.19s
