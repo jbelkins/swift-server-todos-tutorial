@@ -54,6 +54,14 @@
 
                 @Code(name: "cdk deploy PipelineStack", file: 6-bash.6.txt, reset: true)
             }
+
+            @Step {
+                **Read** `aws-infra/lib/pipeline-stack.ts` while the stack deploys.
+
+                Skim the file. Focus on the CodeCommit repository, the `codebuild.Source.codeCommit(...)` wiring, the CodeBuild project with its environment variables, and the `repository.onCommit(...)` rule that fires the build on every push to `main`. Skip the IAM policy blocks on a first read.
+
+                @Code(name: "pipeline-stack.ts", file: 6-pipelinestack.0.ts, reset: true)
+            }
         }
     }
 

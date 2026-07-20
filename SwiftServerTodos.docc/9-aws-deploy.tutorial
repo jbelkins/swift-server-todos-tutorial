@@ -20,6 +20,14 @@
 
                 @Code(name: "cdk deploy ServiceStack", file: 6-bash.7.txt, reset: true)
             }
+
+            @Step {
+                **Read** `aws-infra/lib/service-stack.ts` while the stack deploys.
+
+                Focus on the `FargateTaskDefinition` (1 vCPU, 2 GB, ARM64), the container's `secrets:` block that maps individual Secrets Manager fields to `DB_HOST` / `DB_USER` / `DB_PASS` / `DB_NAME`, the `FargateService` placement in the private-isolated subnets, and the ALB with its `:80` listener forwarding to the container on `:8080`. The commented HTTPS listener stub above the HTTP listener shows how to add TLS with an ACM certificate in a real deployment.
+
+                @Code(name: "service-stack.ts", file: 6-servicestack.0.ts, reset: true)
+            }
         }
     }
 }
