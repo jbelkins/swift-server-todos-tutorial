@@ -1,9 +1,13 @@
 version: 0.2
 
+# The CodeBuild environment is an ARM64 agent (see PipelineStack), and the
+# ECS task also runs on ARM64 (see ServiceStack). All builds are native
+# arm64. No cross-arch emulation, no buildx multi-arch manifests.
+
 phases:
   install:
     commands:
-      - docker buildx version
+      - docker --version
   pre_build:
     commands:
       - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPOSITORY_URI
@@ -12,7 +16,9 @@ phases:
       - echo "Building $ECR_REPOSITORY_URI:$IMAGE_TAG"
   build:
     commands:
-      - docker buildx build --platform linux/arm64 -t $ECR_REPOSITORY_URI:$IMAGE_TAG -t $ECR_REPOSITORY_URI:latest --push .
+      - docker build -t $ECR_REPOSITORY_URI:$IMAGE_TAG -t $ECR_REPOSITORY_URI:latest .
+      - docker push $ECR_REPOSITORY_URI:$IMAGE_TAG
+      - docker push $ECR_REPOSITORY_URI:latest
   post_build:
     commands:
       # The very first build runs before ServiceStack is deployed. Skip the
