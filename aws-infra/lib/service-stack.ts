@@ -83,13 +83,10 @@ export class ServiceStack extends cdk.Stack {
         DB_NAME: ecs.Secret.fromSecretsManager(props.dbSecret, 'dbname'),
       },
       portMappings: [{ containerPort: 8080, protocol: ecs.Protocol.TCP }],
-      healthCheck: {
-        command: ['CMD-SHELL', 'curl -f http://localhost:8080/health || exit 1'],
-        interval: cdk.Duration.seconds(30),
-        timeout: cdk.Duration.seconds(5),
-        retries: 3,
-        startPeriod: cdk.Duration.seconds(60),
-      },
+      // No container-level HEALTHCHECK. The ALB target group already
+      // health-checks `/health` on port 8080. A second check inside the
+      // container is redundant and requires shipping `curl` in the runtime
+      // image, which the minimal `ubuntu:noble` base does not include.
     });
 
     props.dbSecret.grantRead(taskDefinition.taskRole);
