@@ -50,11 +50,11 @@ export class PipelineStack extends cdk.Stack {
       source: codeCommitSource,
       buildSpec: codebuild.BuildSpec.fromSourceFilename('buildspec.yml'),
       environment: {
-        // Native ARM64 build agent. Matches the target image architecture
-        // so `docker buildx build --platform linux/arm64` runs natively
-        // rather than under QEMU (which fails with "exec format error"
-        // on cross-arch CodeBuild agents).
-        buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0,
+        // Native ARM64 build agent on Amazon Linux 2023. Matches the
+        // target image architecture so `docker build` runs natively
+        // rather than under QEMU emulation. AL2 is deprecated for new
+        // CodeBuild projects and will be removed in a future release.
+        buildImage: codebuild.LinuxArmBuildImage.AMAZON_LINUX_2023_STANDARD_3_0,
         privileged: true,
         computeType: codebuild.ComputeType.LARGE,
       },
