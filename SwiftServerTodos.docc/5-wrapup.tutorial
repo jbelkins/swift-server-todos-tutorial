@@ -41,6 +41,8 @@
     * HTTP
         * [Vapor](https://vapor.codes) is the web framework this tutorial used.
         * [Hummingbird](https://hummingbird.codes) is another web framework you could use.
+    * Serverless
+        * [Swift AWS Lambda Runtime](https://swiftpackageindex.com/swift-server/swift-aws-lambda-runtime) to write AWS Lambda functions in Swift.
     * GRPC
         * [Swift GRPC](https://github.com/grpc/grpc-swift) is another library you can use to build API focused cloud services in Swift.
     * OpenAPI provides examples of how to use it as both client and server, with multiple frameworks:

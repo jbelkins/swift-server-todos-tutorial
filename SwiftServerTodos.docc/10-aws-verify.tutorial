@@ -14,7 +14,7 @@
             @Step {
                 **Capture** the ALB DNS name, then post a TODO.
 
-                Read the DNS name from the ELBv2 API or from the `ServiceStack` CDK output. Post a TODO and expect `201 Created`. On a cold start, the first request can take a few seconds while Aurora Serverless v2 scales up.
+                Read the DNS name from the `ServiceStack` CloudFormation output using `aws cloudformation describe-stacks`. Post a TODO and expect `201 Created`. On a cold start, the first request can take a few seconds while Aurora Serverless v2 scales up.
 
                 @Code(name: "curl POST", file: 6-bash.8.txt, reset: true)
             }
@@ -22,7 +22,7 @@
             @Step {
                 **Fetch** the TODOs and tail the task logs.
 
-                A `GET` returns the item you just created. `aws logs tail /ecs/swift-todos --follow` streams the ECS task logs from CloudWatch Logs so you can watch requests as they arrive.
+                A `GET` returns the item you just created. CDK generates the ECS log group name with a hash suffix, so look it up first with `aws logs describe-log-groups`, then `aws logs tail --follow` streams the ECS task logs from CloudWatch Logs.
 
                 @Code(name: "curl GET and logs tail", file: 6-bash.9.txt, reset: true)
             }

@@ -31,7 +31,7 @@
 
     @Section(title: "Deploy the database stack") {
         @ContentAndMedia {
-            `DatabaseStack` creates an Aurora Serverless v2 Postgres cluster in the private subnets with `serverlessV2ScalingConfiguration` set to `minCapacity: 0.5`, `maxCapacity: 2`. The database security group accepts port `5432` from the ECS task security group only. Credentials are auto-generated and stored in AWS Secrets Manager. TLS is on by default and cannot be disabled.
+            `DatabaseStack` creates an Aurora Serverless v2 Postgres cluster in the private subnets with `serverlessV2MinCapacity: 0` (scale-to-zero) and `serverlessV2MaxCapacity: 2`. Aurora auto-pauses after a period of no connections and bills nothing while paused. The first query after a pause pays a short cold-start warm-up. The database security group accepts port `5432` from the ECS task security group only. Credentials are auto-generated and stored in AWS Secrets Manager. TLS is on by default and cannot be disabled.
 
             @Image(source: "aws-aurora.svg", alt: "Amazon Aurora")
         }

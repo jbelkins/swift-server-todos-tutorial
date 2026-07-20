@@ -24,7 +24,7 @@ export class DatabaseStack extends cdk.Stack {
       }),
       credentials: rds.Credentials.fromGeneratedSecret('todos_admin'),
       writer: rds.ClusterInstance.serverlessV2('Writer'),
-      serverlessV2MinCapacity: 0.5,
+      serverlessV2MinCapacity: 0,
       serverlessV2MaxCapacity: 2.0,
       vpc: props.vpc,
       vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },

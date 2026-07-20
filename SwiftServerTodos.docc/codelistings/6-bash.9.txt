@@ -8,7 +8,13 @@
   ]
 }
 
-% aws logs tail /ecs/swift-todos --follow --region us-east-1
+# Look up the ECS log group name (CDK auto-generates it with a hash suffix).
+% export LOG_GROUP=$(aws logs describe-log-groups \
+  --region us-east-1 \
+  --query "logGroups[?contains(logGroupName, 'ServiceStack-ServiceLogGroup')].logGroupName | [0]" \
+  --output text)
+
+% aws logs tail $LOG_GROUP --follow --region us-east-1
 2026-07-20T10:12:34 [ NOTICE ] Server started on http://0.0.0.0:8080
 2026-07-20T10:13:02 [ INFO ] POST /api/todos 201
 2026-07-20T10:13:15 [ INFO ] GET  /api/todos 200

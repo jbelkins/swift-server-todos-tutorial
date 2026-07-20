@@ -1,10 +1,11 @@
-% export ALB_URL=$(aws elbv2 describe-load-balancers \
+% export ALB_URL=$(aws cloudformation describe-stacks \
+  --stack-name ServiceStack \
   --region us-east-1 \
-  --query "LoadBalancers[?contains(LoadBalancerName, 'swift-todos')].DNSName" \
+  --query "Stacks[0].Outputs[?OutputKey=='AlbDnsName'].OutputValue" \
   --output text)
 
 % echo $ALB_URL
-swift-todos-alb-1234567890.us-east-1.elb.amazonaws.com
+Servic-LoadB-abcdef123456-1234567890.us-east-1.elb.amazonaws.com
 
 % curl -i -X POST \
   -H "Content-Type: application/json" \
