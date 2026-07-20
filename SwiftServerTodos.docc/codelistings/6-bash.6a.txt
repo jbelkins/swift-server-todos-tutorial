@@ -1,0 +1,19 @@
+# macOS with Homebrew
+% brew install pipx
+% pipx install git-remote-codecommit
+  installed package git-remote-codecommit 1.17
+  Apps installed: git-remote-codecommit
+
+# If pipx complains about the uv backend version, bypass it:
+% pipx install --backend pip git-remote-codecommit
+
+# If your AWS profile uses SSO or IAM Identity Center, add the CRT extras.
+# git-remote-codecommit ships without them and fails with:
+#   MissingDependencyException: Using the login credential provider
+#   requires an additional dependency. You will need to
+#   pip install "botocore[crt]" before proceeding.
+% pipx inject git-remote-codecommit "botocore[crt]"
+
+# Linux or Windows
+% pip3 install --user git-remote-codecommit "botocore[crt]"
+Successfully installed git-remote-codecommit-1.17

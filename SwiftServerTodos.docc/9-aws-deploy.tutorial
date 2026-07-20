@@ -1,0 +1,23 @@
+@Tutorial(time: 10) {
+    @Intro(title: "Deploy the service") {
+        Deploying `ServiceStack` creates the Amazon ECS cluster, the Fargate task definition, the ALB, and the ECS service. When the service starts, ECS pulls the container image you built in the CI tutorial from Amazon ECR and runs it. This is the step that brings the app online in the cloud.
+    }
+
+    @Section(title: "Deploy the service stack") {
+        @ContentAndMedia {
+            `ServiceStack` creates an ECS Fargate cluster and task definition that pulls the image from the ECR repository provisioned by `PipelineStack`. The ALB in the public subnets forwards port `80` to the task on port `8080`. The task role reads the AWS Secrets Manager secret from `DatabaseStack` and receives `DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME`, and `AWS_REGION` as environment variables. Logs go to a CloudWatch log group with 7-day retention.
+
+            @Image(source: "aws-ecs.svg", alt: "Amazon ECS")
+        }
+
+        @Steps {
+            @Step {
+                **Deploy** `ServiceStack`.
+
+                Run `npx cdk deploy ServiceStack --region us-east-1`. CDK creates the ECS service. ECS pulls the container image from ECR, starts a task, and registers the task with the ALB target group. On success, the command prints the ALB DNS name. Depending on cold start, the ALB may take an extra minute to report the task healthy.
+
+                @Code(name: "cdk deploy ServiceStack", file: 6-bash.7.txt, reset: true)
+            }
+        }
+    }
+}

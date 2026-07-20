@@ -1,0 +1,75 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Prepare the app for Amazon Aurora") {
+        [Amazon Aurora Serverless v2](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html) provides a managed PostgreSQL cluster that scales compute capacity based on demand. Aurora enables TLS on all database connections by default. Before deploying to AWS, add the TLS wiring so the same app runs unchanged against local Postgres and against Aurora.
+    }
+
+    @Section(title: "Add TLS support to the database layer") {
+        @ContentAndMedia {
+            To connect to Aurora, the app must trust Amazon's root certificates, configure the PostgreSQL driver to use TLS, and keep the local docker-compose flow working unchanged.
+
+            The steps below add the TLS wiring. Local development on `localhost` keeps the plain-text path. Anything else, including the Aurora writer endpoint, gets full certificate verification against the Amazon RDS root CA for the current region.
+
+            @Image(source: "aws-aurora.svg", alt: "Amazon Aurora")
+        }
+
+        @Steps {
+            @Step {
+                **Add** the `NIOSSL` dependency.
+
+                Open `Package.swift` and declare `swift-nio-ssl` as a package dependency and `NIOSSL` as a target dependency. `NIOSSL` ships the `TLSConfiguration` and `NIOSSLContext` types the helper needs.
+
+                @Code(name: "Package.swift", file: 6-package.0.swift, previousFile: 4-package.0.swift)
+            }
+
+            @Step {
+                **Create** the RDS TLS module directory.
+
+                Run `mkdir -p Sources/SwiftServerTodos/RDSTLS`. This directory holds the helper and one Swift file per supported AWS region.
+
+                @Code(name: "mkdir", file: 6-bash.0.txt, reset: true)
+            }
+
+            @Step {
+                **Add** `Sources/SwiftServerTodos/RDSTLS/RDSTLSHelper.swift`.
+
+                `pgAmazonRDSTLSConfiguration(logger:)` reads `AWS_REGION`, looks up the matching PEM bundle, loads it into an `NIOSSLCertificate`, and returns an `NIOSSLContext` with full verification enabled. If the region has no matching bundle, it throws `RDSError.missingRootCertificateForRegion`.
+
+                @Code(name: "RDSTLSHelper.swift", file: 6-rdstlshelper.0.swift)
+            }
+
+            @Step {
+                **Add** `Sources/SwiftServerTodos/RDSTLS/us-east-1.swift`.
+
+                Declare a `us_east_1_bundle_pem` string constant containing the Amazon RDS root certificates for the region. Download the full PEM bundle from the [AWS RDS SSL documentation](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html). The listing on the right is abbreviated. See `Completed/Sources/SwiftServerTodos/RDSTLS/us-east-1.swift` for the full content.
+
+                > Tip: The `Completed/` folder ships `eu-west-2.swift` as a second example. To support another region, download its PEM bundle, add a new file next to these two, and register the constant in the `rootRDSCertificates` dictionary in `RDSTLSHelper.swift`.
+
+                @Code(name: "us-east-1.swift", file: 6-us-east-1.0.swift)
+            }
+
+            @Step {
+                **Update** `Database.swift` to branch on the hostname.
+
+                Read the Postgres URL as before, then pick a TLS mode. `localhost` and `postgres` (the docker-compose service name) keep `.disable`. Any other host gets `.require(pgAmazonRDSTLSConfiguration(...))`. A small `SQLPostgresConfiguration` extension re-applies the TLS mode to the parsed URL configuration so the rest of the function is unchanged.
+
+                @Code(name: "Database.swift", file: 6-database.1.swift, previousFile: 6-database.0.swift)
+            }
+
+            @Step {
+                **Rebuild** the app and restart it.
+
+                In the terminal running `swift run SwiftServerTodos`, press `Ctrl-C`, then relaunch. Postgres from the previous chapter is still running, so no other terminal needs to change. The hostname is `localhost`, the TLS branch selects `.disable`, and the app connects as before. If Postgres is not running, start it first with `docker compose up postgres` in a separate terminal.
+
+                @Code(name: "swift run", file: 6-bash.1.txt, reset: true)
+            }
+
+            @Step {
+                **Verify** the localhost path still works.
+
+                Run `curl localhost:8080/api/todos`. The response lists the TODOs you created in the previous chapter, which proves the TLS change did not break local development. The next tutorial builds a container image from this exact code.
+
+                @Code(name: "curl", file: 6-bash.2.txt, reset: true)
+            }
+        }
+    }
+}

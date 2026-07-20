@@ -1,0 +1,6 @@
+% node --version
+v20.11.0
+
+% npm install -g aws-cdk
+% cdk --version
+2.1128.0 (build ...)

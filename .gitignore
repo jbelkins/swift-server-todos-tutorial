@@ -92,3 +92,13 @@ fastlane/test_output
 
 iOSInjectionProject/
 Package.resolved
+
+# CDK infra
+aws-infra/node_modules/
+aws-infra/cdk.out/
+aws-infra/*.js
+aws-infra/*.d.ts
+
+# DocC preview
+docc-output/
+.vscode/

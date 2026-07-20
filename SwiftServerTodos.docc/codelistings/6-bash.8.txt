@@ -1,0 +1,20 @@
+% export ALB_URL=$(aws elbv2 describe-load-balancers \
+  --region us-east-1 \
+  --query "LoadBalancers[?contains(LoadBalancerName, 'swift-todos')].DNSName" \
+  --output text)
+
+% echo $ALB_URL
+swift-todos-alb-1234567890.us-east-1.elb.amazonaws.com
+
+% curl -i -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"contents":"hello aurora"}' \
+  http://$ALB_URL/api/todos
+
+HTTP/1.1 201 Created
+Content-Type: application/json; charset=utf-8
+
+{
+  "contents" : "hello aurora",
+  "id" : "9F8E7D6C-5B4A-3210-FEDC-BA9876543210"
+}

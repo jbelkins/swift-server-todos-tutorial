@@ -1,0 +1,29 @@
+@Tutorial(time: 10) {
+    @Intro(title: "Cost and tear-down") {
+        The running stack costs roughly `$0.35` per hour idle in `us-east-1`. The main drivers are: Aurora Serverless v2 at `0.5` minimum ACU (around `$0.06` per hour when idle, billed per ACU-hour even when there are no queries), four interface VPC endpoints at around `$0.01` per endpoint per hour, one Fargate task (`0.25` vCPU / `0.5` GB memory) at around `$0.012` per hour, and one Application Load Balancer at around `$0.023` per hour plus LCU-hour charges. The design has no NAT gateway, so tear-down is complete once every stack is gone.
+    }
+
+    @Section(title: "Destroy every stack") {
+        @ContentAndMedia {
+            One CDK command removes every resource created across the previous tutorials.
+        }
+
+        @Steps {
+            @Step {
+                **Destroy** every stack.
+
+                Run `cdk destroy --all --region us-east-1` from `aws-infra/`. CDK removes `ServiceStack` first, then `DatabaseStack`, then `NetworkStack`, then `PipelineStack`. Confirm the prompt with `y`.
+
+                @Code(name: "cdk destroy", file: 6-bash.10.txt, reset: true)
+            }
+
+            @Step {
+                **Confirm** the account is empty.
+
+                Open the AWS Console and check the VPC, RDS, and ECS pages. Confirm that no VPCs, RDS clusters, or ECS clusters tagged with the workshop name remain. Because the design has no NAT gateway and no persistent state outside these stacks, there is nothing else to clean up.
+
+                @Image(source: "aws-logo.svg", alt: "AWS logo")
+            }
+        }
+    }
+}

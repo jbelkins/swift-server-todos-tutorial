@@ -1,0 +1,8 @@
+% npx cdk deploy ServiceStack --region us-east-1
+
+ [OK]  ServiceStack
+
+Outputs:
+ServiceStack.AlbDnsName = swift-todos-alb-1234567890.us-east-1.elb.amazonaws.com
+ServiceStack.ClusterName = swift-todos-cluster
+ServiceStack.ServiceName = swift-todos-service

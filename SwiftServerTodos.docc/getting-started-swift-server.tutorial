@@ -16,13 +16,27 @@
     
     @Chapter(name: "Build a basic Vapor app") {
         Get started by building a basic Vapor app.
-        
+
         @Image(source: "Vapor 4 Logo Small.png", alt: "vapor logo")
-        
+
         @TutorialReference(tutorial: "doc:1-introduction")
         @TutorialReference(tutorial: "doc:2-openapi")
         @TutorialReference(tutorial: "doc:3-database")
         @TutorialReference(tutorial: "doc:4-telemetry")
+    }
+
+    @Chapter(name: "Deploy on AWS") {
+        Ship the app to AWS on ECS Fargate with an Aurora Serverless v2 database.
+
+        @Image(source: "aws-logo.svg", alt: "AWS logo")
+
+        @TutorialReference(tutorial: "doc:5-aws-architecture")
+        @TutorialReference(tutorial: "doc:6-aws-rds-tls")
+        @TutorialReference(tutorial: "doc:7-aws-cicd")
+        @TutorialReference(tutorial: "doc:8-aws-infrastructure")
+        @TutorialReference(tutorial: "doc:9-aws-deploy")
+        @TutorialReference(tutorial: "doc:10-aws-verify")
+        @TutorialReference(tutorial: "doc:11-aws-cleanup")
     }
 
     @Chapter(name: "Review and next steps") {

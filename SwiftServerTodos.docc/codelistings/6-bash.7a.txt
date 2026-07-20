@@ -1,0 +1,10 @@
+% cd aws-infra
+% npx cdk deploy NetworkStack --region us-east-1
+
+ [OK]  NetworkStack
+
+Outputs:
+NetworkStack.VpcId = vpc-0123456789abcdef0
+NetworkStack.AlbSecurityGroupId = sg-0aaaaaaaaaaaaaaaa
+NetworkStack.TaskSecurityGroupId = sg-0bbbbbbbbbbbbbbbb
+NetworkStack.AuroraSecurityGroupId = sg-0cccccccccccccccc

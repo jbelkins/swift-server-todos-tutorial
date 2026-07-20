@@ -1,0 +1,97 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Build the CI pipeline") {
+        Provision the pipeline stack. It creates an [AWS CodeCommit](https://docs.aws.amazon.com/codecommit/latest/userguide/welcome.html) repository, an [AWS CodeBuild](https://docs.aws.amazon.com/codebuild/latest/userguide/welcome.html) project, an [Amazon Elastic Container Registry](https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html) (Amazon ECR) repository, and the [AWS Identity and Access Management](https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html) (IAM) plumbing that connects them. Every `git push` to CodeCommit triggers a CodeBuild run that builds a container image and pushes it to ECR.
+    }
+
+    @Section(title: "Install the prerequisites") {
+        @ContentAndMedia {
+            The CDK CLI needs Node.js and AWS credentials. Install both once, then reuse them across the remaining tutorials.
+        }
+
+        @Steps {
+            @Step {
+                **Install** the AWS CLI and sign in.
+
+                Use `aws sso login` if your account uses IAM Identity Center, or `aws configure` for long-lived credentials. Then pin the region explicitly. The workshop uses `us-east-1` for every command.
+
+                @Code(name: "aws sso login", file: 6-bash.3.txt, reset: true)
+            }
+
+            @Step {
+                **Install** Node 20 and the AWS CDK CLI.
+
+                CDK requires Node 20 or later. Install the CDK CLI globally with `npm install -g aws-cdk`.
+
+                @Code(name: "npm install", file: 6-bash.4.txt, reset: true)
+            }
+
+            @Step {
+                **Bootstrap** the target account and region.
+
+                CDK stores its deployment assets in an S3 bucket and an ECR repository that must exist before the first `cdk deploy`. Run `cdk bootstrap` once per account and region. Find the account ID with `aws sts get-caller-identity`.
+
+                > Note: `cdk bootstrap` is mandatory. If you skip it, `cdk deploy` fails with `SSM parameter /cdk-bootstrap/hnb659fds/version not found`.
+
+                @Code(name: "cdk bootstrap", file: 6-bash.5.txt, reset: true)
+            }
+        }
+    }
+
+    @Section(title: "Deploy the pipeline stack") {
+        @ContentAndMedia {
+            With CDK bootstrapped, deploy the pipeline stack. The stack creates a CodeCommit repository, a CodeBuild project, an ECR repository, and an EventBridge rule that runs CodeBuild on every push to `main`.
+
+            The workshop uses CodeCommit as the source rather than GitHub because CodeCommit lives inside AWS. It uses IAM for authentication, so there is no external token to import and no webhook to authorize.
+
+            @Image(source: "aws-codebuild.svg", alt: "AWS CodeBuild")
+        }
+
+        @Steps {
+            @Step {
+                **Deploy** the `PipelineStack`.
+
+                Change into `aws-infra/`, install the CDK dependencies, and deploy the stack. The output prints the ECR repository URI, the CodeBuild project name, and the CodeCommit clone URL.
+
+                @Code(name: "cdk deploy PipelineStack", file: 6-bash.6.txt, reset: true)
+            }
+        }
+    }
+
+    @Section(title: "Push the source to CodeCommit") {
+        @ContentAndMedia {
+            In this tutorial, CodeBuild pulls the source from AWS CodeCommit. Add a Git remote that points at CodeCommit, push the working copy, and the CodeBuild pipeline runs automatically.
+
+            CodeBuild also supports GitHub, GitHub Enterprise, GitLab, and Bitbucket as sources. This tutorial uses CodeCommit because it lives inside AWS and authenticates through IAM, so there is no external token to import and no webhook to authorize. To use GitHub or one of the other providers instead, replace `codebuild.Source.codeCommit(...)` in `aws-infra/lib/pipeline-stack.ts` with the matching constructor (for example `codebuild.Source.gitHub(...)`) and follow [`aws codebuild import-source-credentials`](https://docs.aws.amazon.com/codebuild/latest/APIReference/API_ImportSourceCredentials.html) to authorize the connection once per account.
+
+            IAM does not use passwords for `git`. Install the [`git-remote-codecommit`](https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-git-remote-codecommit.html) helper once, and `git` transparently uses your AWS CLI credentials.
+
+            @Image(source: "aws-codebuild.svg", alt: "AWS CodeBuild")
+        }
+
+        @Steps {
+            @Step {
+                **Install** `git-remote-codecommit`.
+
+                On macOS with Homebrew, use `pipx` to install `git-remote-codecommit` in its own environment. On Linux or Windows, `pip3 install --user git-remote-codecommit` works. This provides a `codecommit://` protocol that `git` understands and that uses your AWS CLI credentials for authentication.
+
+                @Code(name: "pipx install git-remote-codecommit", file: 6-bash.6a.txt, reset: true)
+            }
+
+            @Step {
+                **Add** the CodeCommit remote and push.
+
+                From the root of the tutorial repository, add CodeCommit as a remote named `aws` and push the `main` branch. The push triggers the CodeBuild pipeline on the first commit.
+
+                @Code(name: "git push aws main", file: 6-bash.6b.txt, reset: true)
+            }
+
+            @Step {
+                **Watch** the build.
+
+                Open the [CodeBuild console](https://console.aws.amazon.com/codesuite/codebuild/projects) and watch the `swift-todos-build` project. When it finishes, the image is in ECR, ready for the next tutorial.
+
+                @Image(source: "aws-codebuild.svg", alt: "AWS CodeBuild")
+            }
+        }
+    }
+}

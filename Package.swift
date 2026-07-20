@@ -17,11 +17,18 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-configuration", from: "1.2.0"),
 
         // Telemetry
-        .package(url: "https://github.com/apple/swift-log", from: "1.5.2"),
+        .package(url: "https://github.com/apple/swift-log", from: "1.14.0"),
+       .package(url: "https://github.com/apple/swift-metrics", from: "2.5.0"),
+        .package(url: "https://github.com/apple/swift-distributed-tracing", from: "1.2.0"),
+        .package(url: "https://github.com/swift-otel/swift-otel", from: "1.0.0"),
+        .package(url: "https://github.com/apple/swift-system-metrics", from: "1.2.1"),
 
         // Database
         .package(url: "https://github.com/vapor/fluent.git", from: "4.0.0"),
         .package(url: "https://github.com/vapor/fluent-postgres-driver.git", from: "2.0.0"),
+
+        // TLS (transitively pulled by fluent-postgres-driver, declared explicitly for `import NIOSSL`)
+        .package(url: "https://github.com/apple/swift-nio-ssl.git", from: "2.25.0"),
     ],
     targets: [
         .executableTarget(
@@ -31,9 +38,25 @@ let package = Package(
                 .product(name: "Vapor", package: "vapor"),
                 .product(name: "ServiceLifecycle", package: "swift-service-lifecycle"),
                 .product(name: "Configuration", package: "swift-configuration"),
+                .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
+                .product(name: "OpenAPIVapor", package: "swift-openapi-vapor"),
 
                 // Telemetry
                 .product(name: "Logging", package: "swift-log"),
+                .product(name: "Metrics", package: "swift-metrics"),
+                .product(name: "Tracing", package: "swift-distributed-tracing"),
+                .product(name: "OTel", package: "swift-otel"),
+                .product(name: "SystemMetrics", package: "swift-system-metrics"),
+
+                // Database
+                .product(name: "Fluent", package: "fluent"),
+                .product(name: "FluentPostgresDriver", package: "fluent-postgres-driver"),
+                
+                // TLS to Amazon RDS / Aurora
+                .product(name: "NIOSSL", package: "swift-nio-ssl"),
+            ],
+            plugins: [
+                .plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator")
             ]
         )
     ]

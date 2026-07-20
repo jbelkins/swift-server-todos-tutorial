@@ -1,0 +1,33 @@
+@Tutorial(time: 5) {
+    @Intro(title: "The target architecture") {
+        Understand what you are about to build before touching any code. This page describes the AWS architecture and the CI pipeline. No steps to follow, only an overview.
+    }
+
+    @Section(title: "What you deploy") {
+        @ContentAndMedia {
+            The runtime uses four AWS services. Only the [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) (ALB) has a public address. It listens on port `80` and forwards to the app. [Amazon Elastic Container Service](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html) (Amazon ECS) with [AWS Fargate](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html) runs the container image on port `8080` in a private subnet. [Amazon Aurora Serverless v2](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html) (PostgreSQL) sits in a private subnet on port `5432`. All of it lives inside an [Amazon Virtual Private Cloud](https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html) (Amazon VPC) across two availability zones with public and private-isolated subnets. There is no NAT gateway. Interface VPC endpoints let the ECS task reach the AWS APIs it needs without leaving the VPC.
+
+            A CI pipeline built on [AWS CodeBuild](https://docs.aws.amazon.com/codebuild/latest/userguide/welcome.html) and [Amazon Elastic Container Registry](https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html) (Amazon ECR) rebuilds the container image on every `git push` and updates the ECS service.
+
+            @Image(source: "architecture.png", alt: "Target architecture: VPC with an ALB in a public subnet forwarding to an ECS Fargate task in a private subnet, connected to an Aurora Serverless v2 cluster in a private subnet. A CodeBuild project pushes container images to ECR.")
+        }
+
+        @Steps {
+            @Step {
+                **Review** the traffic path.
+
+                Client on the internet, then the ALB in the public subnet on port `80`, then the ECS Fargate task in a private subnet on port `8080`, then the Aurora cluster in a private subnet on port `5432`. Nothing else is reachable from outside the VPC.
+
+                @Image(source: "architecture.png", alt: "Traffic path highlighted from internet to ALB to ECS to Aurora.")
+            }
+
+            @Step {
+                **Move on.**
+
+                No action needed on this page. Continue to the next tutorial to prepare the app for Amazon Aurora.
+
+                @Image(source: "aws-logo.svg", alt: "AWS logo")
+            }
+        }
+    }
+}

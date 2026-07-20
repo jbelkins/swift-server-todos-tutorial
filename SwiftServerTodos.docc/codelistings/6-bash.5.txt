@@ -1,0 +1,3 @@
+% cdk bootstrap aws://$(aws sts get-caller-identity --query Account --output text)/us-east-1
+ Bootstrapping environment aws://123456789012/us-east-1...
+ [OK]  Environment aws://123456789012/us-east-1 bootstrapped.

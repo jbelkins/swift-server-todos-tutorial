@@ -1,0 +1,7 @@
+% npx cdk deploy DatabaseStack --region us-east-1
+
+ [OK]  DatabaseStack
+
+Outputs:
+DatabaseStack.ClusterEndpoint = swift-todos-db.cluster-abc.us-east-1.rds.amazonaws.com
+DatabaseStack.SecretArn = arn:aws:secretsmanager:us-east-1:123456789012:secret:todos-admin-xxxxxx

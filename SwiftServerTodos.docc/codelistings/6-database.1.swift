@@ -5,7 +5,12 @@ import Foundation
 import Vapor
 
 func configureDatabase(app: Application, config: ConfigReader) async throws {
-    let postgresURL = try resolvePostgresURL(config)
+    let postgresConfig = config.scoped(to: "postgres")
+    let postgresURL = postgresConfig.string(
+        forKey: "url",
+        as: URL.self,
+        default: URL(string: "postgres://postgres@localhost:5432/postgres?sslmode=disable")!
+    )
 
     // Amazon RDS and Aurora require TLS. Local Postgres in docker-compose
     // does not. Branch on the hostname so the same code path works in both
@@ -26,36 +31,6 @@ func configureDatabase(app: Application, config: ConfigReader) async throws {
         Migrations.CreateTODOs()
     ])
     try await app.autoMigrate()
-}
-
-// Resolve the Postgres URL from configuration.
-//
-// Precedence:
-//   1. `POSTGRES_URL` set explicitly (used by local docker-compose and by
-//      anyone passing a full URL).
-//   2. Compose from `DB_HOST` / `DB_USER` / `DB_PASS` / `DB_NAME` when
-//      injected as individual env vars (used by the ECS task in AWS,
-//      where credentials come from Secrets Manager one field at a time).
-//   3. Fall back to the local docker-compose default.
-private func resolvePostgresURL(_ config: ConfigReader) throws -> URL {
-    if let url = config.string(forKey: "postgres.url", as: URL.self) {
-        return url
-    }
-
-    let env = ProcessInfo.processInfo.environment
-    if let host = env["DB_HOST"], !host.isEmpty {
-        let user = env["DB_USER"] ?? "postgres"
-        let password = env["DB_PASS"] ?? ""
-        let name = env["DB_NAME"] ?? "postgres"
-        let creds = password.isEmpty ? user : "\(user):\(password)"
-        let urlString = "postgres://\(creds)@\(host):5432/\(name)"
-        guard let url = URL(string: urlString) else {
-            throw Abort(.internalServerError, reason: "Invalid DB_* env values")
-        }
-        return url
-    }
-
-    return URL(string: "postgres://postgres@localhost:5432/postgres?sslmode=disable")!
 }
 
 extension SQLPostgresConfiguration {
