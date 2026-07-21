@@ -1,6 +1,6 @@
 @Tutorial(time: 15) {
-    @Intro(title: "Prepare the app for Amazon Aurora") {
-        [Amazon Aurora Serverless v2](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html) provides a managed PostgreSQL cluster that scales compute capacity based on demand. Aurora enables TLS on all database connections by default. Before deploying to AWS, add the TLS wiring so the same app runs unchanged against local Postgres and against Aurora.
+    @Intro(title: "Prepare the app for AWS") {
+        Two things stand between the app you ran locally and a container running on AWS. First, [Amazon Aurora Serverless v2](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html) requires TLS on every database connection, so add the TLS wiring that lets the same app run unchanged against local Postgres and against Aurora. Second, review the `Dockerfile` that packages the app into the container image you will deploy to Amazon ECS. The first part changes code; the second only reads it.
     }
 
     @Section(title: "Add TLS support to the database layer") {
@@ -69,6 +69,34 @@
                 Run `curl localhost:8080/api/todos`. The response lists the TODOs you created in the previous chapter, which proves the TLS change did not break local development. The next tutorial builds a container image from this exact code.
 
                 @Code(name: "curl", file: 6-bash.2.txt, reset: true)
+            }
+        }
+    }
+
+    @Section(title: "Inspect the Dockerfile you will deploy") {
+        @ContentAndMedia {
+            ECS Fargate does not run Swift source or a `swift run` process. It runs a container image. The `Dockerfile` at the root of the repository is what turns the code you just built into that image, and the CI pipeline in the next tutorials builds it for you on every push. This section only reads the file. There is no code to change.
+
+            The build uses a **multi-stage** pattern with two images. The first stage starts from `swift:6.3-noble`, the official Swift image that Apple and the Swift project publish with the full Swift toolchain preinstalled on Ubuntu 24.04 ("Noble"). Because the toolchain is already there, the stage compiles the app directly with `swift build -c release --static-swift-stdlib`, producing a single statically linked binary. The second stage starts from a plain `ubuntu:noble` image with no toolchain, and copies only the compiled binary (plus the backtrace helper and CA certificates) into it. The image you deploy therefore ships the binary, not the compiler, which keeps it small and free of build-time tooling.
+
+            @Image(source: "aws-ecs.svg", alt: "Amazon ECS")
+        }
+
+        @Steps {
+            @Step {
+                **Read** the `Dockerfile` at the repository root.
+
+                Focus on the two `FROM` lines. `FROM swift:6.3-noble AS builder` is the toolchain image that compiles the app; `FROM ubuntu:noble` is the slim runtime image that ships only the result. Everything between the second `FROM` and the end describes what the running container does, not how it was built.
+
+                @Code(name: "Dockerfile", file: 6-dockerfile.0.txt, reset: true)
+            }
+
+            @Step {
+                **Trace** what gets copied into the final image.
+
+                In the builder stage, `swift build --static-swift-stdlib` links the Swift standard library into the binary so the runtime image needs no Swift libraries of its own. The `COPY --from=builder` lines pull just the compiled `SwiftServerTodos` binary and the `swift-backtrace-static` helper out of the builder stage. The runtime image adds only `ca-certificates` (used for the Aurora TLS connection from the previous section) and `tzdata`. `EXPOSE 8080` and the final `CMD` show the container listening on port `8080`, exactly the port the ALB forwards to in the deployed architecture.
+
+                @Image(source: "aws-ecs.svg", alt: "Amazon ECS")
             }
         }
     }
