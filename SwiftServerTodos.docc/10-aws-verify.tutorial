@@ -24,6 +24,8 @@
 
                 A `GET` returns the item you just created. CDK generates the ECS log group name with a hash suffix, so look it up first with `aws logs describe-log-groups`, then `aws logs tail --follow` streams the ECS task logs from CloudWatch Logs.
 
+                > Note: You will see repeated `warning swift-otel: ... Failed to export batch` / `Connection refused` lines alongside your request logs. This is expected. The app still exports OpenTelemetry (as it did against Grafana locally), but the deployed task has no OTel collector to receive it, so the exporter cannot reach `localhost:4318` and logs a warning. The app itself is healthy. Wiring an AWS OpenTelemetry backend is left as an advanced exercise: set the `OTEL_EXPORTER_OTLP_ENDPOINT` environment variable on the container in `aws-infra/lib/service-stack.ts` to point at a collector (for example a sidecar or the CloudWatch OTLP endpoint) that forwards to CloudWatch, X-Ray, or Amazon Managed Service for Prometheus.
+
                 @Code(name: "curl GET and logs tail", file: 6-bash.9.txt, reset: true)
             }
         }
