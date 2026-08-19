@@ -17,7 +17,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-configuration", from: "1.2.0"),
 
         // Telemetry
-        .package(url: "https://github.com/apple/swift-log", from: "1.5.2"),
+        .package(url: "https://github.com/apple/swift-log", from: "1.15.0"),
 
         // Database
         .package(url: "https://github.com/vapor/fluent.git", from: "4.0.0"),
