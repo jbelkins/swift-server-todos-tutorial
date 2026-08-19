@@ -63,24 +63,9 @@ func configureTelemetry(_ config: ConfigReader) async throws -> (Logger, some Se
     return (logger, telemetryService)
 }
 
-extension Logger {
-    @TaskLocal
-    static var _current: Logger?
-
-    static var current: Logger {
-        get throws {
-            guard let _current else {
-                struct NoCurrentLoggerError: Error {}
-                throw NoCurrentLoggerError()
-            }
-            return _current
-        }
-    }
-}
-
 struct RequestLoggerInjectionMiddleware: Vapor.AsyncMiddleware {
     func respond(to request: Request, chainingTo next: any AsyncResponder) async throws -> Response {
-        try await Logger.$_current.withValue(request.logger) {
+        try await withLogger(request.logger) { _ in
             try await next.respond(to: request)
         }
     }
