@@ -33,7 +33,6 @@ struct Entrypoint {
                 services: services,
                 gracefulShutdownSignals: [.sigint],
                 cancellationSignals: [.sigterm],
-                logger: logger
             )
             try await serviceGroup.run()
         }
