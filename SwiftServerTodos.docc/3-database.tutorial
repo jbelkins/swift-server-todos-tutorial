@@ -30,7 +30,7 @@
                 
                 Open `Package.swift` to add the Fluent dependencies to the target.
 
-                @Code(name: "Database.swift", file: 3-package.0.swift, previousFile: 2-package.1.swift)
+                @Code(name: "Package.swift", file: 3-package.0.swift, previousFile: 2-package.1.swift)
             }
             
             @Step {
