@@ -73,6 +73,10 @@
                 stops alongside the server. Because services start in array order and shut down in
                 reverse, placing telemetry first keeps it running while the server drains.
 
+                Wrap the body in swift-log's `withLogger` to bind the logger to the task-local
+                context. Anything running inside that scope — including startup and shutdown — can
+                then read it via `Logger.current` instead of having the logger passed down to it.
+
                 @Code(name: "Entrypoint.swift", file: 4-entrypoint.0.swift, previousFile: 3-entrypoint.1.swift)
             }
 
@@ -89,10 +93,11 @@
             @Step {
                 **Edit** `APIHandler.swift`
 
-                Log inside `listTODOs` and `createTODO` using the `Logger.current` task-local that
-                `RequestLoggerInjectionMiddleware` set. Because these log lines run inside the span
-                `TracingMiddleware` starts, the metadata provider attaches `trace_id` and `span_id` —
-                giving you a concrete log line per request that correlates with its trace in Grafana.
+                Log inside `listTODOs` and `createTODO` using swift-log's `Logger.current`
+                task-local, which `RequestLoggerInjectionMiddleware` binds to the request's logger.
+                Because these log lines run inside the span `TracingMiddleware` starts, the metadata
+                provider attaches `trace_id` and `span_id` — giving you a concrete log line per
+                request that correlates with its trace in Grafana.
 
                 @Code(name: "APIHandler.swift", file: 4-apihandler.0.swift, previousFile: 3-apihandler.4.swift)
             }

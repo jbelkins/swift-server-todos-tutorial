@@ -17,8 +17,8 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-configuration", from: "1.2.0"),
 
         // Telemetry
-        .package(url: "https://github.com/apple/swift-log", from: "1.14.0"),
-       .package(url: "https://github.com/apple/swift-metrics", from: "2.5.0"),
+        .package(url: "https://github.com/apple/swift-log", from: "1.15.0"),
+        .package(url: "https://github.com/apple/swift-metrics", from: "2.5.0"),
         .package(url: "https://github.com/apple/swift-distributed-tracing", from: "1.2.0"),
         .package(url: "https://github.com/swift-otel/swift-otel", from: "1.0.0"),
         .package(url: "https://github.com/apple/swift-system-metrics", from: "1.2.1"),

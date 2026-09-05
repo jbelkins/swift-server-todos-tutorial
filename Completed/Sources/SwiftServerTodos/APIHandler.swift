@@ -11,7 +11,7 @@ struct APIHandler: APIProtocol {
     func listTODOs(
         _ input: Operations.ListTODOs.Input
     ) async throws -> Operations.ListTODOs.Output {
-        try Logger.current.info("Listing TODOs")
+        Logger.current.info("Listing TODOs")
 
         let dbTodos = try await db.query(DB.TODO.self).all()
 
@@ -33,10 +33,7 @@ struct APIHandler: APIProtocol {
             let newId = UUID().uuidString
             let contents = todo.contents
 
-            try Logger.current.info(
-                "Creating TODO",
-                metadata: ["todo.id": "\(newId)"]
-            )
+            Logger.current.info("Creating TODO", metadata: ["todo.id": "\(newId)"])
 
             let dbTodo = DB.TODO()
             dbTodo.id = newId

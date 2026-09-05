@@ -80,7 +80,7 @@
             @Step {
                 **Define** the parameter for the TODO identifier.
 
-                The TODO identifier will be used to determine which TOTO to retrieve or delete.
+                The TODO identifier will be used to determine which TODO to retrieve or delete.
                 
                 @Code(name: "openapi.yaml", file: 2-openapi.7.yaml, previousFile: 2-openapi.6.yaml)
             }

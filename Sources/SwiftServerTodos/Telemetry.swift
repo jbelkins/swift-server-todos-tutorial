@@ -73,7 +73,7 @@ func configureTelemetry(_ config: ConfigReader) async throws -> (Logger, some Se
 
 struct RequestLoggerInjectionMiddleware: Vapor.AsyncMiddleware {
     func respond(to request: Request, chainingTo next: any AsyncResponder) async throws -> Response {
-        try await withLogger(request.logger) { logger in 
+        try await withLogger(request.logger) { logger in
             try await next.respond(to: request)
         }
     }
