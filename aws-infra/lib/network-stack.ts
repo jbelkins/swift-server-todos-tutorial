@@ -96,6 +96,35 @@ export class NetworkStack extends cdk.Stack {
       subnets: [{ subnetType: ec2.SubnetType.PRIVATE_ISOLATED }],
     });
 
+    // VPC Block Public Access is an account-and-region-wide setting. When its
+    // InternetGatewayBlockMode is `block-ingress` or `block-bidirectional`,
+    // inbound traffic is dropped at the internet gateway before it reaches the
+    // ALB. The symptom is confusing: the target group reports healthy targets
+    // and every security group, route table, and NACL checks out, but requests
+    // time out and the load balancer records no connections at all.
+    //
+    // The exclusion below re-opens the gateway for this VPC only, leaving the
+    // account-wide setting untouched. It defaults to on via `allowVpcIngress`
+    // in cdk.json, and creating it requires
+    // `ec2:CreateVpcBlockPublicAccessExclusion` on the deploy role. Accounts
+    // with BPA off -- the default -- do not need the exclusion; opt out with
+    // `-c allowVpcIngress=false` or by editing cdk.json.
+    //
+    // Diagnose with:
+    //   aws ec2 describe-vpc-block-public-access-options --region <region>
+    //
+    // The comparison accepts a boolean and a string because cdk.json context
+    // is parsed as JSON (`true`) while `-c allowVpcIngress=true` on the
+    // command line always arrives as the string `'true'`.
+    const allowVpcIngress = this.node.tryGetContext('allowVpcIngress');
+    if (allowVpcIngress === true || allowVpcIngress === 'true') {
+      new ec2.CfnVPCBlockPublicAccessExclusion(this, 'IgwIngressExclusion', {
+        vpcId: this.vpc.vpcId,
+        // `allow-egress` is not enough; inbound requires bidirectional.
+        internetGatewayExclusionMode: 'allow-bidirectional',
+      });
+    }
+
     new cdk.CfnOutput(this, 'VpcId', { value: this.vpc.vpcId });
   }
 }
