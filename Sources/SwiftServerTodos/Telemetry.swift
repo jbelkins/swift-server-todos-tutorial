@@ -62,9 +62,9 @@ func configureTelemetry(_ config: ConfigReader) async throws -> (Logger, some Se
     let telemetryService = ServiceGroup(
         services: [
             otelLoggingBackend.service,
-//            otelMetricsBackend.service,
-//            otelTracingBackend.service,
-//            systemMetricsMonitor,
+            otelMetricsBackend.service,
+            otelTracingBackend.service,
+            systemMetricsMonitor,
         ], logger: logger)
 
 

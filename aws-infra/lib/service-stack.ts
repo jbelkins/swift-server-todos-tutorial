@@ -75,6 +75,15 @@ export class ServiceStack extends cdk.Stack {
       }),
       environment: {
         AWS_REGION: cdk.Stack.of(this).region,
+        // Running under docker-compose, the app exports logs, metrics, and
+        // traces to the `grafana/otel-lgtm` container. No collector runs
+        // alongside this Fargate task, so every exporter would retry
+        // localhost:4318 on a timer and bury the application's own logs in
+        // connection-refused warnings. Swift OTel reads the standard OTel
+        // environment variables, so disabling export here needs no code
+        // change. To ship telemetry for real, drop this variable and add an
+        // ADOT collector sidecar listening on 4318.
+        OTEL_SDK_DISABLED: 'true',
       },
       secrets: {
         DB_HOST: ecs.Secret.fromSecretsManager(props.dbSecret, 'host'),
