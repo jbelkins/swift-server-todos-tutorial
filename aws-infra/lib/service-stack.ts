@@ -79,11 +79,16 @@ export class ServiceStack extends cdk.Stack {
         // traces to the `grafana/otel-lgtm` container. No collector runs
         // alongside this Fargate task, so every exporter would retry
         // localhost:4318 on a timer and bury the application's own logs in
-        // connection-refused warnings. Swift OTel reads the standard OTel
-        // environment variables, so disabling export here needs no code
-        // change. To ship telemetry for real, drop this variable and add an
-        // ADOT collector sidecar listening on 4318.
-        OTEL_SDK_DISABLED: 'true',
+        // connection-refused warnings.
+        //
+        // This gates the backend construction in Telemetry.swift rather than
+        // the OTel SDK itself. Swift OTel throws from its backend factories
+        // when a signal is disabled, so the spec's OTEL_SDK_DISABLED crashes
+        // the container at startup instead of quieting it.
+        //
+        // To ship telemetry for real, drop this variable and add an ADOT
+        // collector sidecar listening on 4318.
+        OTEL_ENABLED: 'false',
       },
       secrets: {
         DB_HOST: ecs.Secret.fromSecretsManager(props.dbSecret, 'host'),
