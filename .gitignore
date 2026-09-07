@@ -98,6 +98,10 @@ aws-infra/node_modules/
 aws-infra/cdk.out/
 aws-infra/*.js
 aws-infra/*.d.ts
+# Cache of CDK environmental lookups, keyed by account and region. CDK
+# regenerates it on demand, so tracking it only churns whenever a different
+# account deploys.
+aws-infra/cdk.context.json
 
 # DocC preview
 docc-output/
