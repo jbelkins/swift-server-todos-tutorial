@@ -1,0 +1,33 @@
+@Tutorial(time: 10) {
+    @Intro(title: "Deploy the service") {
+        Deploying `ServiceStack` creates the Amazon ECS cluster, the Fargate task definition, the ALB, and the ECS service. When the service starts, ECS pulls the container image you built in the CI tutorial from Amazon ECR and runs it. This is the step that brings the app online in the cloud.
+    }
+
+    @Section(title: "Deploy the service stack") {
+        @ContentAndMedia {
+            `ServiceStack` creates an ECS Fargate cluster and task definition that pulls the image from the ECR repository provisioned by `PipelineStack`. The ALB in the public subnets forwards port `80` to the task on port `8080`. The task role reads the AWS Secrets Manager secret from `DatabaseStack` and receives `DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME`, and `AWS_REGION` as environment variables. Logs go to a CloudWatch log group with 7-day retention.
+
+            **In real life**, terminate TLS on the ALB with a :443 listener rather than serving :80 in the clear. Request a certificate for a domain you own with [`aws acm request-certificate --domain-name your-app.example.com --validation-method DNS`](https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-request-public.html), complete DNS validation, then add a :443 listener to the ALB in `aws-infra/lib/service-stack.ts` with `certificates: [listenerCertificate]` and forward :80 to :443 with `elbv2.ListenerAction.redirect({ protocol: 'HTTPS', port: '443' })`. The workshop keeps :80 because attendees do not own a shared domain in `us-east-1`.
+
+            @Image(source: "aws-ecs.svg", alt: "Amazon ECS")
+        }
+
+        @Steps {
+            @Step {
+                **Deploy** `ServiceStack`.
+
+                Run `npx cdk deploy ServiceStack --region us-east-1`. CDK creates the ECS service. ECS pulls the container image from ECR, starts a task, and registers the task with the ALB target group. On success, the command prints the ALB DNS name. Depending on cold start, the ALB may take an extra minute to report the task healthy.
+
+                @Code(name: "cdk deploy ServiceStack", file: 6-bash.7.txt, reset: true)
+            }
+
+            @Step {
+                **Read** `aws-infra/lib/service-stack.ts` while the stack deploys.
+
+                Focus on the `FargateTaskDefinition` (1 vCPU, 2 GB, ARM64), the container's `secrets:` block that maps individual Secrets Manager fields to `DB_HOST` / `DB_USER` / `DB_PASS` / `DB_NAME`, the `FargateService` placement in the private-isolated subnets, and the ALB with its `:80` listener forwarding to the container on `:8080`. The commented HTTPS listener stub above the HTTP listener shows how to add TLS with an ACM certificate in a real deployment.
+
+                @Code(name: "service-stack.ts", file: 6-servicestack.0.ts, reset: true)
+            }
+        }
+    }
+}

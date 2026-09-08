@@ -14,6 +14,7 @@
     2. Leveraged `OpenAPI` to generate the routes and handlers.
     3. Added in `Fluent` to interact with a PostgreSQL database.
     4. Integrated `OpenTelemetry` for distributed tracing and metrics, with a Grafana dashboard to visualize them.
+    5. Deployed the service on AWS with a CodeBuild CI pipeline, ECS Fargate, and Aurora Serverless v2 over TLS, then tore the stack down.
 
     This should give you a taste of how to write `HTTP` services with Swift!
 
@@ -40,6 +41,8 @@
     * HTTP
         * [Vapor](https://vapor.codes) is the web framework this tutorial used.
         * [Hummingbird](https://hummingbird.codes) is another web framework you could use.
+    * Serverless
+        * [Swift AWS Lambda Runtime](https://swiftpackageindex.com/swift-server/swift-aws-lambda-runtime) to write AWS Lambda functions in Swift.
     * GRPC
         * [Swift GRPC](https://github.com/grpc/grpc-swift) is another library you can use to build API focused cloud services in Swift.
     * OpenAPI provides examples of how to use it as both client and server, with multiple frameworks:

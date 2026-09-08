@@ -5,26 +5,26 @@ import Foundation
 import Vapor
 
 func configureDatabase(app: Application, config: ConfigReader) async throws {
-//    let env = ProcessInfo.processInfo.environment
-//    let host = env["DB_HOST"] ?? "localhost"
-//
-//    let tls: PostgresConnection.Configuration.TLS
-//    switch host {
-//    case "localhost", "postgres":
-//        tls = .disable
-//    default:
-//        tls = try .require(pgAmazonRDSTLSConfiguration(logger: app.logger))
-//    }
-//
-//    let sqlConfig = SQLPostgresConfiguration(
-//        hostname: host,
-//        port: SQLPostgresConfiguration.ianaPortNumber,
-//        username: env["DB_USER"] ?? "postgres",
-//        password: env["DB_PASS"],
-//        database: env["DB_NAME"] ?? "postgres",
-//        tls: tls
-//    )
-//    app.databases.use(.postgres(configuration: sqlConfig), as: .psql)
+    let env = ProcessInfo.processInfo.environment
+    let host = env["DB_HOST"] ?? "localhost"
+
+    let tls: PostgresConnection.Configuration.TLS
+    switch host {
+    case "localhost", "postgres":
+        tls = .disable
+    default:
+        tls = try .require(pgAmazonRDSTLSConfiguration(logger: app.logger))
+    }
+
+    let sqlConfig = SQLPostgresConfiguration(
+        hostname: host,
+        port: SQLPostgresConfiguration.ianaPortNumber,
+        username: env["DB_USER"] ?? "postgres",
+        password: env["DB_PASS"],
+        database: env["DB_NAME"] ?? "postgres",
+        tls: tls
+    )
+    app.databases.use(.postgres(configuration: sqlConfig), as: .psql)
 
     app.migrations.add([
         Migrations.CreateTODOs()

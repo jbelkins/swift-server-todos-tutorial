@@ -1,0 +1,8 @@
+% aws --version
+aws-cli/2.36.2 Python/3.14.6 Darwin/25.5.0 source/arm64
+
+% aws sso login
+Attempting to automatically open the SSO authorization page in your default browser.
+
+% export AWS_REGION=us-east-1
+% export CDK_DEFAULT_REGION=us-east-1

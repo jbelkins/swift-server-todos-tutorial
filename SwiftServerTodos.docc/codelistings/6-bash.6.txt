@@ -1,0 +1,11 @@
+% cd aws-infra
+% npm install
+% npx cdk deploy PipelineStack --region us-east-1
+
+ [OK]  PipelineStack
+
+Outputs:
+PipelineStack.BuildProjectName = swift-todos-build
+PipelineStack.EcrRepositoryUri = 123456789012.dkr.ecr.us-east-1.amazonaws.com/swift-todos
+PipelineStack.RepositoryCloneUrlHttp = https://git-codecommit.us-east-1.amazonaws.com/v1/repos/swift-todos
+PipelineStack.RepositoryCloneUrlGrc = codecommit::us-east-1://swift-todos

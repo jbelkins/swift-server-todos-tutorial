@@ -5,10 +5,20 @@ services:
       - "8080:8080"
     environment:
       LOG_LEVEL: debug
-      POSTGRES_URL: postgres://postgres@postgres:5432/postgres?sslmode=disable
+      # Database.swift reads these discrete variables, not a connection URL.
+      # DB_HOST is the one that matters: it defaults to `localhost`, which
+      # inside this container is the container itself. No DB_PASS, because the
+      # postgres service below runs with POSTGRES_HOST_AUTH_METHOD: trust, and
+      # `postgres` as a host name selects TLS `.disable` in Database.swift.
+      DB_HOST: postgres
+      DB_USER: postgres
+      DB_NAME: postgres
+      OTEL_EXPORTER_OTLP_PROTOCOL: grpc
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://grafana:4317
     depends_on:
       postgres:
         condition: service_healthy
+
 
   postgres:
     image: postgres:latest
@@ -24,4 +34,9 @@ services:
       timeout: 5s
       retries: 5
 
-# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+
+  grafana:
+    image: grafana/otel-lgtm:latest
+    ports:
+      - "3000:3000"
+      - "4317:4317"

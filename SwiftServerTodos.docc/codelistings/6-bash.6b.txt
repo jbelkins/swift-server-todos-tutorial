@@ -1,0 +1,11 @@
+% cd ..                  # back to the repository root
+% git remote add aws codecommit::us-east-1://swift-todos
+% git push aws main
+Enumerating objects: 428, done.
+Counting objects: 100% (428/428), done.
+Delta compression using up to 10 threads
+Compressing objects: 100% (376/376), done.
+Writing objects: 100% (428/428), 2.14 MiB | 4.23 MiB/s, done.
+Total 428 (delta 138), reused 0 (delta 0)
+To codecommit::us-east-1://swift-todos
+ * [new branch]      main -> main

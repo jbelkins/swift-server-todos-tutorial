@@ -1,0 +1,13 @@
+% npx cdk deploy ServiceStack --region us-east-1
+
+ [OK]  ServiceStack
+
+ Deployment time: 289.13s
+
+Outputs:
+ServiceStack.AlbDnsName = Servic-LoadB-abcdef123456-1234567890.us-east-1.elb.amazonaws.com
+ServiceStack.EcrRepositoryUri = 123456789012.dkr.ecr.us-east-1.amazonaws.com/swift-todos
+Stack ARN:
+arn:aws:cloudformation:us-east-1:123456789012:stack/ServiceStack/680f8680-8464-11f1-98cb-0e21b6ef62ed
+
+ Total time: 310.52s

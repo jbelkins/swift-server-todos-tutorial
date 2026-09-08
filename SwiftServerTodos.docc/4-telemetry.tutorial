@@ -72,7 +72,6 @@
                 Add the telemetry service to the `ServiceGroup` so that it starts and
                 stops alongside the server. Because services start in array order and shut down in
                 reverse, placing telemetry first keeps it running while the server drains.
-
                 Wrap the body in swift-log's `withLogger` to bind the logger to the task-local
                 context. Anything running inside that scope — including startup and shutdown — can
                 then read it via `Logger.current` instead of having the logger passed down to it.

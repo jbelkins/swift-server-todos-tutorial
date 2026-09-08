@@ -1,0 +1,57 @@
+@Tutorial(time: 20) {
+    @Intro(title: "Provision the network and database") {
+        Create the two foundation stacks: the network the app runs on and the Aurora Serverless v2 cluster the app talks to. Neither stack starts the app itself. That happens in the next tutorial.
+    }
+
+    @Section(title: "Deploy the network stack") {
+        @ContentAndMedia {
+            `NetworkStack` creates the Amazon VPC across two availability zones with public and private-isolated subnets. There is no NAT gateway. Only the ALB sits in the public subnets and holds a public address. ECS tasks and the Aurora cluster stay in the private subnets. Interface VPC endpoints for ECR, [Amazon CloudWatch](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html) Logs, [AWS Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html), and [AWS Security Token Service](https://docs.aws.amazon.com/STS/latest/APIReference/welcome.html) (AWS STS) let the tasks reach the AWS APIs without leaving the VPC.
+
+            @Image(source: "aws-vpc.svg", alt: "Amazon VPC")
+        }
+
+        @Steps {
+            @Step {
+                **Deploy** `NetworkStack`.
+
+                From `aws-infra/`, run `npx cdk deploy NetworkStack --region us-east-1`. The deploy takes about two minutes. CDK prints the VPC ID and the security-group IDs it created. Interface VPC endpoints start billing as soon as the stack finishes, so keep an eye on cost if you leave it up overnight.
+
+                @Code(name: "cdk deploy NetworkStack", file: 6-bash.7a.txt, reset: true)
+            }
+
+            @Step {
+                **Read** `aws-infra/lib/network-stack.ts` while the stack deploys.
+
+                Focus on the `Vpc` construct with two AZs, the two subnet types (`PUBLIC` and `PRIVATE_ISOLATED`), the three chained security groups (ALB, tasks, Aurora), and the block of interface VPC endpoints plus the S3 gateway endpoint. This combination replaces a NAT gateway.
+
+                @Code(name: "network-stack.ts", file: 6-networkstack.0.ts, reset: true)
+            }
+        }
+    }
+
+    @Section(title: "Deploy the database stack") {
+        @ContentAndMedia {
+            `DatabaseStack` creates an Aurora Serverless v2 Postgres cluster in the private subnets with `serverlessV2MinCapacity: 0` (scale-to-zero) and `serverlessV2MaxCapacity: 2`. Aurora auto-pauses after a period of no connections and bills nothing while paused. The first query after a pause pays a short cold-start warm-up. The database security group accepts port `5432` from the ECS task security group only. Credentials are auto-generated and stored in AWS Secrets Manager. TLS is on by default and cannot be disabled.
+
+            @Image(source: "aws-aurora.svg", alt: "Amazon Aurora")
+        }
+
+        @Steps {
+            @Step {
+                **Deploy** `DatabaseStack`.
+
+                Run `npx cdk deploy DatabaseStack --region us-east-1`. Aurora Serverless v2 clusters take seven to eight minutes to create. This is a good moment to grab water. When the command returns, the cluster is running and the Secrets Manager secret holds the generated credentials.
+
+                @Code(name: "cdk deploy DatabaseStack", file: 6-bash.7b.txt, reset: true)
+            }
+
+            @Step {
+                **Read** `aws-infra/lib/database-stack.ts` while the stack deploys.
+
+                Focus on the `auroraPostgres` engine version, the `serverlessV2MinCapacity` and `serverlessV2MaxCapacity` values, `Credentials.fromGeneratedSecret('todos_admin')` (this auto-provisions the Secrets Manager secret ECS reads later), and the `vpcSubnets: PRIVATE_ISOLATED` placement. TLS is on by default and there is no flag to set.
+
+                @Code(name: "database-stack.ts", file: 6-databasestack.0.ts, reset: true)
+            }
+        }
+    }
+}

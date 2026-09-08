@@ -1,0 +1,45 @@
+@Tutorial(time: 5) {
+    @Intro(title: "Cost and tear-down") {
+        Review what the running stack costs, then destroy every resource with one CDK command.
+    }
+
+    @Section(title: "Understand what you pay for") {
+        @ContentAndMedia {
+            The running stack costs roughly `$0.20` per hour under light traffic in `us-east-1`, and as little as `$0.14` per hour when idle because Aurora Serverless v2 pauses to `0` ACU. The breakdown on the right shows where each dollar goes.
+        }
+
+        @Steps {
+            @Step {
+                **Read** the breakdown and decide whether to keep the stack running.
+
+                If you plan to iterate on the app later today, keep it up. Aurora auto-pauses so idle cost is dominated by the four VPC endpoints and the ALB. If you are done, continue to the next section and destroy everything.
+
+                @Code(name: "cost breakdown", file: 6-cost.txt, reset: true)
+            }
+        }
+    }
+
+    @Section(title: "Destroy every stack") {
+        @ContentAndMedia {
+            One CDK command removes every resource created across the previous tutorials.
+        }
+
+        @Steps {
+            @Step {
+                **Destroy** every stack.
+
+                Run `cdk destroy --all --region us-east-1` from `aws-infra/`. CDK removes `ServiceStack` first, then `DatabaseStack`, then `NetworkStack`, then `PipelineStack`. Confirm the prompt with `y`.
+
+                @Code(name: "cdk destroy", file: 6-bash.10.txt, reset: true)
+            }
+
+            @Step {
+                **Confirm** the account is empty.
+
+                Open the AWS Console and check the VPC, RDS, and ECS pages. Confirm that no VPCs, RDS clusters, or ECS clusters tagged with the workshop name remain. Because the design has no NAT gateway and no persistent state outside these stacks, there is nothing else to clean up.
+
+                @Image(source: "aws-logo-black.svg", alt: "AWS logo")
+            }
+        }
+    }
+}

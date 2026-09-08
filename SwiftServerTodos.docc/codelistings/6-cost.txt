@@ -1,0 +1,26 @@
+# Hourly cost in us-east-1
+
+Aurora Serverless v2
+    $0.12 per ACU-hour
+    min = 0 ACU (paused)     -> $0.00/hr idle
+    peak workshop load       -> $0.06/hr
+
+Interface VPC endpoints (x4)
+    $0.01 per endpoint-hour  per AZ
+    4 endpoints x 2 AZs      -> $0.08/hr
+
+Fargate task (ARM64, 1 vCPU, 2 GB)
+    vCPU  = $0.03238/hr
+    RAM   = $0.00712/hr
+    total                    -> $0.04/hr
+
+Application Load Balancer
+    base                     -> $0.0225/hr
+    + LCU-hour charges
+
+------------------------------------------------
+Idle  (Aurora paused)        ~ $0.14/hr
+Light traffic                ~ $0.20/hr
+
+No NAT gateway.
+No data-transfer charges inside the VPC.

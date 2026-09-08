@@ -27,11 +27,8 @@ let package = Package(
         .package(url: "https://github.com/vapor/fluent.git", from: "4.0.0"),
         .package(url: "https://github.com/vapor/fluent-postgres-driver.git", from: "2.0.0"),
 
-        // Docs
-        .package(url: "https://github.com/swiftlang/swift-docc-plugin", from: "1.4.0"),
-
         // TLS (transitively pulled by fluent-postgres-driver, declared explicitly for `import NIOSSL`)
-//        .package(url: "https://github.com/apple/swift-nio-ssl.git", from: "2.25.0"),
+        .package(url: "https://github.com/apple/swift-nio-ssl.git", from: "2.25.0"),
     ],
     targets: [
         .executableTarget(
@@ -40,9 +37,9 @@ let package = Package(
                 // Server scaffolding
                 .product(name: "Vapor", package: "vapor"),
                 .product(name: "ServiceLifecycle", package: "swift-service-lifecycle"),
-                .product(name: "Configuration", package: "swift-configuration"),
                 .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
                 .product(name: "OpenAPIVapor", package: "swift-openapi-vapor"),
+                .product(name: "Configuration", package: "swift-configuration"),
 
                 // Telemetry
                 .product(name: "Logging", package: "swift-log"),
@@ -54,9 +51,9 @@ let package = Package(
                 // Database
                 .product(name: "Fluent", package: "fluent"),
                 .product(name: "FluentPostgresDriver", package: "fluent-postgres-driver"),
-                
+
                 // TLS to Amazon RDS / Aurora
-//                .product(name: "NIOSSL", package: "swift-nio-ssl"),
+                .product(name: "NIOSSL", package: "swift-nio-ssl"),
             ],
             plugins: [
                 .plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator")
