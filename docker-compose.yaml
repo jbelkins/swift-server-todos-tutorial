@@ -5,7 +5,6 @@ services:
       - "8080:8080"
     environment:
       LOG_LEVEL: debug
-      POSTGRES_URL: postgres://postgres@postgres:5432/postgres?sslmode=disable
       DB_HOST: postgres
       DB_USER: postgres
       DB_NAME: postgres
