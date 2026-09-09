@@ -1,0 +1,33 @@
+version: 0.2
+
+# The CodeBuild environment is an ARM64 agent (see PipelineStack), and the
+# ECS task also runs on ARM64 (see ServiceStack). All builds are native
+# arm64. No cross-arch emulation, no buildx multi-arch manifests.
+
+phases:
+  install:
+    commands:
+      - docker --version
+  pre_build:
+    commands:
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPOSITORY_URI
+      # Use short commit SHA for traceable image tags; fall back to `latest` when running outside a source-backed build.
+      - IMAGE_TAG=$(echo ${CODEBUILD_RESOLVED_SOURCE_VERSION:-latest} | cut -c1-7)
+      - echo "Building $ECR_REPOSITORY_URI:$IMAGE_TAG"
+  build:
+    commands:
+      - docker build -t $ECR_REPOSITORY_URI:$IMAGE_TAG -t $ECR_REPOSITORY_URI:latest .
+      - docker push $ECR_REPOSITORY_URI:$IMAGE_TAG
+      - docker push $ECR_REPOSITORY_URI:latest
+  post_build:
+    commands:
+      # The very first build runs before ServiceStack is deployed. Skip the
+      # ECS refresh in that case so the build still reports SUCCEEDED.
+      - |
+        if aws ecs describe-services --cluster $ECS_CLUSTER_NAME --services $ECS_SERVICE_NAME --region $AWS_REGION --query 'services[?status==`ACTIVE`] | length(@)' --output text 2>/dev/null | grep -q '^1$'; then
+          aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_NAME --force-new-deployment --region $AWS_REGION
+          echo "Triggered new ECS deployment on $ECS_SERVICE_NAME"
+        else
+          echo "ServiceStack not deployed yet, skipping ECS refresh"
+        fi
+      - echo "Pushed $ECR_REPOSITORY_URI:$IMAGE_TAG"
