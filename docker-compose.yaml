@@ -5,11 +5,7 @@ services:
       - "8080:8080"
     environment:
       LOG_LEVEL: debug
-      # Database.swift reads these discrete variables, not a connection URL.
-      # DB_HOST is the one that matters: it defaults to `localhost`, which
-      # inside this container is the container itself. No DB_PASS, because the
-      # postgres service below runs with POSTGRES_HOST_AUTH_METHOD: trust, and
-      # `postgres` as a host name selects TLS `.disable` in Database.swift.
+      POSTGRES_URL: postgres://postgres@postgres:5432/postgres?sslmode=disable
       DB_HOST: postgres
       DB_USER: postgres
       DB_NAME: postgres
